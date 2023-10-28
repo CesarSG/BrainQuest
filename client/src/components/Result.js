@@ -1,7 +1,19 @@
 import React from 'react'
 import { Link } from 'react-router-dom'
 
+import { resetAllAction } from '../reducer/questions_reducer'
+import { resetResultAction } from '../reducer/result_reducer'
+import { useDispatch } from 'react-redux'
+
 export default function Result() {
+
+    const dispatch = useDispatch()
+
+    function onRestart(){
+        dispatch(resetAllAction())
+        dispatch(resetResultAction())
+    }   
+
     return (
         <div>
             <h1>Result quiz</h1>
@@ -20,7 +32,7 @@ export default function Result() {
             </div>
 
             <div>
-                <Link to={'/'}>Home</Link>
+                <Link to={'/'} onClick={onRestart}>Home</Link>
             </div>
         </div>
     )
