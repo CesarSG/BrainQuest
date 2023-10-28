@@ -1,37 +1,50 @@
 import React, { useEffect, useState } from 'react'
-import data from '../database/data'
+import { useDispatch, useSelector } from 'react-redux';
 
-export default function Questions() {
+import { useFetchQuestion } from '../hooks/FecthQuestions';
+import { updateResult } from '../hooks/setResult';
+
+export default function Questions({ onChecked }) {
 
     const [checked, setChecked] = useState(undefined)
+    const { trace } = useSelector(state => state.questions)
+    const result = useSelector(state => state.result.result)
+    const [{isLoading, apiData, serverError}] = useFetchQuestion()
 
-    const question = data[0];
+    const questions = useSelector(state => state.questions.queue[state.questions.trace])
+    const dispatch = useDispatch()
 
     useEffect(() => {
-        console.log("he")
-    })
+        dispatch(updateResult({ trace, checked }))
+    }, [checked])
 
-    function onSelect(){
-        console.log("select")
+    function onSelect(i){
+        onChecked(i)
+        setChecked(i)
+        dispatch(updateResult({ trace, checked }))
     }
+
+    if(isLoading) return <h3>Loading</h3>
+    if(serverError) return <h3>{serverError || "Unknown error"}</h3>
 
     return (
         <div>
-            <h2>{question.question}</h2>
+            <h2>{questions?.question}</h2>
 
-            <ul key={question.id}>
+            <ul key={questions?.id}>
                 {
-                    question.options.map((q, index) => (
+                    questions?.options.map((q, index) => (
                         <li key={index}>
                             <input 
                                 type='radio' 
                                 value={checked}
                                 name='options'
                                 id={`q${index}-option`}
-                                onChange={onSelect}
+                                onChange={() => onSelect(index)}
+                                checked={result[trace] === index || (result[trace] && index === checked)}
                             />
                             <label htmlFor={`q${index}-option`}>{q}</label>
-                            <div></div>
+                            <div>{ result[trace] === index ? <p>Selected</p> : null }</div>
                         </li>
                     ))
                 }
