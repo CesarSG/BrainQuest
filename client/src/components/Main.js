@@ -5,7 +5,6 @@ export default function Main() {
 
     const inputRef = useRef(null)
 
-
     return (
         <div>
             <form id='form'>
